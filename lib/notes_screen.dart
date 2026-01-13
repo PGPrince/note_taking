@@ -13,22 +13,22 @@ class _NotesScreenState extends State<NotesScreen> {
 
   final textController = TextEditingController();
 
-  void addNewNote() {
+  void addNewNote() async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         content: TextField(
           controller: textController,
-          decoration: InputDecoration(hintText: 'Enter your note'),
+          decoration: InputDecoration(hintText: 'Enter you note'),
         ),
         actions: [
-          //Save Button
+          // Save button
           TextButton(
             onPressed: () {
               saveNote();
               Navigator.pop(context);
             },
-            child: const Text('Save'),
+            child: Text('Save'),
           ),
         ],
       ),
@@ -41,21 +41,22 @@ class _NotesScreenState extends State<NotesScreen> {
     });
   }
 
-  // Read notes from supabase in app
-
-  final _notesStream = Supabase.instance.client
+  // Read Notes from supabase app
+  final _noteStream = Supabase.instance.client
       .from('notes')
       .stream(primaryKey: ['id']);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Center(child: Text("Notes"))),
       floatingActionButton: FloatingActionButton(
         onPressed: addNewNote,
         child: Icon(Icons.add),
       ),
+
       body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: _notesStream,
+        stream: _noteStream,
         builder: (context, snapshot) {
           //loading
           if (!snapshot.hasData) {
@@ -71,10 +72,10 @@ class _NotesScreenState extends State<NotesScreen> {
               //get individual note
               final note = notes[index];
 
-              // get the column you want
+              //get the column you want
               final noteText = note['body'];
 
-              //return as UI
+              //return UI
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 elevation: 3,
@@ -83,7 +84,7 @@ class _NotesScreenState extends State<NotesScreen> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Text(noteText, style: const TextStyle(fontSize: 16)),
+                  child: Text(noteText, style: TextStyle(fontSize: 16)),
                 ),
               );
             },
